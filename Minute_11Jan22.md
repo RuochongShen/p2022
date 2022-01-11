@@ -1,6 +1,6 @@
 # Meeting Minutes
 ## Meeting Information
-**Meeting Date/Time:** 21-12-2021, 2:00 pm <br>
+**Meeting Date/Time:** 11-01-2022, 2:00 pm <br>
 **Meeting Purpose:** Discussion <br>
 **Meeting Location:** Zoom <br>
 **Attendees:** Qiuhong Ke, Shawn Li, Ruochong Shen
