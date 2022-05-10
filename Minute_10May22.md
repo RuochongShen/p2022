@@ -21,6 +21,8 @@ Index | Item | Notes | Further Details |
 
 ## 2. Next steps
   Finish an automatic code of CNNMAR to perform it on large dataset; Try on real cases of metal artifacts and compare CNN images and CNNMAR images.
+  
+  Read related materials at the same time.
 
 ## Additional Notes
 Recently busy with moving home, visa application and some other issues.
