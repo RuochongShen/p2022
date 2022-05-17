@@ -11,7 +11,7 @@ Index | Item | Notes | Further Details |
 
 ## 1. Summary of visa application
   - Authorized an agent to help me with visa application last week
-  - Documents include my detailed history in the last 10 years, CV, research proposa, a drafted geniune temporary entrance (GTE) letter and other forms, certifications, ...
+  - Documents include my detailed history in the last 10 years, CV, research proposa, a drafted geniune temporary entrance (GTE) letter (the length of which is much longer than I expected) and other forms, certifications, ...
   - Waiting for suggestions on GTE from the agent. The agent will finalize the application and submit it for me.
 
 
