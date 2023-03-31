@@ -279,30 +279,47 @@ def myshowpics(pics, figsize=(64, 36)):
   plt.show()
 
 
+def im2HU(im, miuWater):
+  res = (im - miuWater) / miuWater * 1000
+  res[res < 0] = 0
+  res = res.astype(np.uint16)
+  return res
+
+
+def HU2im(imHU, miuWater):
+  return imHU.astype(float) / 1000 * miuWater + miuWater
+
+
 def demo():
     """
     can be executed on google colab;
     take care to change the paths and functions (like display -> plt.imshow())
     """
+    path_read = "/content/drive/MyDrive/FurtherStudy/p2022/test/25-48.tif"
+    path_png_save = "/content/drive/MyDrive/FurtherStudy/p2022/test/test1.png"
+    path_tif_save_LI = "imLI_test.tif"
+    path_tif_save_BHC = "imBHC_test.tif"
 
     # read image and show
-    im = Image.open("/content/drive/MyDrive/FurtherStudy/p2022/test/25-48.tif")
+    im = Image.open(path_read)
     im_arr = np.array(im)
     # display(Image.fromarray(im_arr / 16.0).convert("L"))
 
     # save as png
     new_png = Image.fromarray(im_arr / 16.0).convert("L")
-    new_png.save("/content/drive/MyDrive/FurtherStudy/p2022/test/test1.png")
+    new_png.save(path_png_save)
 
     # parameters and inputs
     CTpara1 = CTpara(0.001 * 180, 984, 59.5, 512, 0.08)
     miuWater = 0.192
     imRawHU = np.array(im)
-    imRawCT = imRawHU.astype(float) / 1000 * miuWater + miuWater
+    imRawCT = HU2im(imRawHU, miuWater)
 
     # prepare mid parameters
     para_proj = parallelbeam(imRawCT)
+    para_proj = para_proj * CTpara1.imPixScale
     proj = fanbeam(imRawCT, CTpara1)
+    proj = proj * CTpara1.imPixScale
     myshowpics([(para_proj, "parallel projection"), (proj, "fanbeam projection")])
 
     threshold = 6000
@@ -310,7 +327,9 @@ def demo():
     myshowpics([(metalBW, "metal")])
 
     metalTrace = fanbeam(metalBW, CTpara1)
+    metalTrace = metalTrace * CTpara1.imPixScale > 0
     para_metalTrace = parallelbeam(metalBW)
+    para_metalTrace = para_metalTrace * CTpara1.imPixScale > 0
     myshowpics([(para_metalTrace, "parallel trace"), (metalTrace, "fanbeam trace")])
 
     # check LI and BHC based on either parallel beam or fanbeam and show
@@ -321,3 +340,14 @@ def demo():
     para_imBHC = marBHC(para_proj, metalBW, CTpara1, isfanbeam=False)
 
     myshowpics([(imLI, "fanbeam LI"), (imBHC, "fanbeam BHC"), (para_imLI, "parallel LI"), (para_imBHC, "parallel BHC")])
+
+    imLI_HU = im2HU(imLI, miuWater)
+    imBHC_HU = im2HU(imBHC, miuWater)
+
+    print(np.max(imLI_HU), np.max(im), np.min(imLI_HU), np.min(im))
+    print(np.max(imBHC_HU), np.max(im), np.min(imBHC_HU), np.min(im))
+    print(np.max(im2HU(para_imLI, miuWater)), np.max(im), np.min(im2HU(para_imLI, miuWater)), np.min(im))
+
+    # set the path
+    cv2.imwrite(path_tif_save_LI, imLI_HU)
+    cv2.imwrite(path_tif_save_BHC, imBHC_HU)
