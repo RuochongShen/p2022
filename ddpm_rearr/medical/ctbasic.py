@@ -19,8 +19,6 @@ from scipy.ndimage.morphology import distance_transform_edt
 from scipy.interpolate import interp1d, griddata
 
 import pickle
-# import pandas as pd
-# import glob
 
 
 class CTpara:
