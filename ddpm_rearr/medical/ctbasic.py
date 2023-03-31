@@ -19,7 +19,7 @@ from scipy.ndimage.morphology import distance_transform_edt
 from scipy.interpolate import interp1d, griddata
 
 import pickle
-import pandas as pd
+# import pandas as pd
 # import glob
 
 
@@ -39,22 +39,21 @@ class CTpara:
         self.SOD = self.SOD / self.imPixScale
 
 
-def parallelbeam(image, pspacing=1, rangedeg=360):
+def parallelbeam(image, pspacing=1., rangedeg=180.):
   """
   forward transform for parallel beam
   """
-  CTparam = CTpara(pspacing, rangedeg, 0, 1, 1)
+  CTparam = CTpara(pspacing, int(rangedeg//pspacing), 0, 1, 1)
   image = np.array(image)
   theta = np.linspace(0., CTparam.angsize*CTparam.AngNum, num=CTparam.AngNum, endpoint=False)
   sinogram = skimage.transform.radon(image, theta=theta, circle=False)
   return sinogram
 
-
-def iparallelbeam(proj, pspacing=1, rangedeg=360):
+def iparallelbeam(proj, pspacing=1., rangedeg=180.):
   """
   reconstruction with the filtered back projection for parallel beam
   """
-  CTparam = CTpara(pspacing, rangedeg, 0, 1, 1)
+  CTparam = CTpara(pspacing, int(rangedeg//pspacing), 0, 1, 1)
   proj = np.array(proj)
   theta = np.linspace(0., CTparam.angsize*CTparam.AngNum, num=CTparam.AngNum, endpoint=False)
   image = skimage.transform.iradon(proj, theta=theta, filter_name='ramp', circle=False)
@@ -171,10 +170,9 @@ def ifanbeam(proj, CTparam, pspacing=1, prangedeg=360):
     image = iparallelbeam(P, pspacing=pspacing, rangedeg=prangedeg)
     im = image.shape[0]
     if im > CTparam.imPixNum:
-        if im - CTparam.imPixNum <= 3:
-            image = image[1:-1, 1:-1]
-        if im - CTparam.imPixNum == 3:
-            image = image[1:, 1:]
+        df = im - CTparam.imPixNum
+        df1 = int(np.floor(df / 2))
+        image = image[df1:CTparam.imPixNum + df1, df1:CTparam.imPixNum + df1]
 
     return image
 
@@ -303,6 +301,7 @@ def demo():
     # read image and show
     im = Image.open(path_read)
     im_arr = np.array(im)
+    n_pix = im_arr.shape[0]
     # display(Image.fromarray(im_arr / 16.0).convert("L"))
 
     # save as png
@@ -310,7 +309,7 @@ def demo():
     new_png.save(path_png_save)
 
     # parameters and inputs
-    CTpara1 = CTpara(0.001 * 180, 984, 59.5, 512, 0.08)
+    CTpara1 = CTpara(0.001 * 180, 984, 59.5, n_pix, 0.08)
     miuWater = 0.192
     imRawHU = np.array(im)
     imRawCT = HU2im(imRawHU, miuWater)
